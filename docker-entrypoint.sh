@@ -20,7 +20,7 @@ function create_dashboard_from_template {
 
     # wrap it into the shape that the API expects
     dashboard="{\"overwrite\":true,\"dashboard\": $grafana_template }"
-    echo $dashboard
+    echo "$dashboard"
 }
 
 function bootstrap_grafana {
@@ -48,7 +48,7 @@ function bootstrap_grafana {
 
     # Loop over datasources, and add each via API
     # Currently only using a single Prometheus data source
-    for file in ${GRAFANA_SOURCES_PATH}/datasources/*.json ; do
+    for file in $(find ${GRAFANA_SOURCES_PATH}/datasources/ -name '*.json') ; do
         if [ -e "$file" ] ; then
             echo "importing datasource: $file" &&
             curl --silent --fail --show-error \
@@ -62,7 +62,7 @@ function bootstrap_grafana {
 
     # Loop over dashboards, and add each via API
     # Dashboards use a nested version of the dashboard templates
-    for file in ${GRAFANA_SOURCES_PATH}/dashboards/*.json ; do
+    for file in $(find ${GRAFANA_SOURCES_PATH}/dashboards/ -name '*.json') ; do
         if [ -e "$file" ] ; then
             # convert grafana 'templates' to what the api expects
             dashboard=$(create_dashboard_from_template $file)
